@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http" 
 	wss "ok"
-	wss2 "ok"
 )
 
 //funcion del html y javascript que simula un chat 
@@ -22,7 +21,6 @@ func main() {
 	fmt.Println("localhost:8080")
 	http.HandleFunc("/", homepage) //http
 	http.HandleFunc("/ws", wss.Read) //ws
-	http.HandleFunc("/ws2", wss2.Read) //ws
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
