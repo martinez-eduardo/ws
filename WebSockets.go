@@ -9,8 +9,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var clients = make(map[*websocket.Conn]bool)
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -30,35 +28,35 @@ func Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	clients[ws] = true
-	message(ws)
-}
-
-
-func message(client *websocket.Conn) {
-	//send(client, "Bienvenido al WebSocket Golang")
 	for {
-		_, p, err := client.ReadMessage()
+		_, p, err := ws.ReadMessage()
 		if err != nil {
-			client.Close()
-			delete(clients, client)
+			ws.Close()
+			delete(clients, ws)
 			return
 		}
+		client=ws  // <- hay que corregir agregandole programacion orientada a objetos para tener multiples instancias
 		funcion(string(p))
-		//onbroadcast(string(p))
 	}
 }
 
-func Send(client *websocket.Conn, mensaje string) error {
+
+/*TODO ESTE CONTENIDO DEBERIA ESTAR EN OTRA INSTANCIA*/
+
+var clients = make(map[*websocket.Conn]bool)
+var client *websocket.Conn
+
+func Send(mensaje string) error {
 	err := client.WriteMessage(websocket.TextMessage, []byte(mensaje))
 	return err
 }
 
 func Broadcast(mensaje string) {
-	for client := range clients {
-		err := Send(client, mensaje)
+	for ws := range clients {
+		err := ws.WriteMessage(websocket.TextMessage, []byte(mensaje))
 		if err != nil {
-			client.Close()
-			delete(clients, client)
+			ws.Close()
+			delete(clients, ws)
 		}
 	}
 }

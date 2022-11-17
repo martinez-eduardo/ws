@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http" 
-	wss "ok"
+	websock "ok"
 )
 
 //funcion del html y javascript que simula un chat 
@@ -16,15 +16,16 @@ func homepage(w http.ResponseWriter, r *http.Request) {
 //metodo principal 
 func main() {
 
-	wss.Reception(RECIBIR)
+	websock.Reception(RECIBIR)
 
 	fmt.Println("localhost:8080")
 	http.HandleFunc("/", homepage) //http
-	http.HandleFunc("/ws", wss.Read) //ws
+	http.HandleFunc("/ws", websock.Read) //ws
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 
 func RECIBIR(mensaje string) { 
-	wss.Broadcast(mensaje) 
+	//wss.Broadcast(mensaje) 
+	websock.Send(mensaje)
 }
